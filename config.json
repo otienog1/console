@@ -1,0 +1,43 @@
+{
+    "game_folders": [
+        "C:/Games",
+        "C:/Program Files (x86)/Steam/steamapps/common",
+        "C:/Program Files/Epic Games",
+        "C:/GOG Games",
+        "C:/Users/7plus8/Downloads/G"
+    ],
+    "window": {
+        "width": 1920,
+        "height": 1080,
+        "fullscreen": true
+    },
+    "ui": {
+        "tiles_per_row": 7,
+        "tile_size": 200,
+        "tile_spacing": 30,
+        "scroll_speed": 15,
+        "highlight_color": [
+            0,
+            150,
+            255
+        ],
+        "background_color": [
+            20,
+            20,
+            30
+        ],
+        "text_color": [
+            255,
+            255,
+            255
+        ]
+    },
+    "controller": {
+        "deadzone": 0.3,
+        "repeat_delay": 500,
+        "repeat_interval": 150
+    },
+    "sorting": "recent",
+    "show_recently_played": true,
+    "max_recent_games": 10
+}

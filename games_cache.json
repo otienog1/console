@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "last_scan": "2025-11-24T13:07:40.524038",
+  "games": [
+    {
+      "name": "Mafia III Definitive Edition",
+      "path": "C:\\Users\\7plus8\\Downloads\\G\\Mafia III Definitive Edition\\Mafia3DefinitiveEdition.exe",
+      "icon_path": null,
+      "poster_path": "C:\\Users\\7plus8\\Downloads\\G\\Mafia III Definitive Edition\\images_\\poster.jpg",
+      "background_path": "C:\\Users\\7plus8\\Downloads\\G\\Mafia III Definitive Edition\\images_\\background.jpg",
+      "folder_source": "C:/Users/7plus8/Downloads/G",
+      "last_played": "2025-11-24T12:55:02.756716",
+      "play_count": 1,
+      "is_shortcut": false,
+      "hash_id": "094f9acc2f52"
+    },
+    {
+      "name": "The Precinct SteamRIP.com",
+      "path": "C:\\Users\\7plus8\\Downloads\\G\\The-Precinct-SteamRIP.com\\The Precinct\\Precinct.exe",
+      "icon_path": null,
+      "poster_path": "C:\\Users\\7plus8\\Downloads\\G\\The-Precinct-SteamRIP.com\\The Precinct\\images_\\poster.jpg",
+      "background_path": "C:\\Users\\7plus8\\Downloads\\G\\The-Precinct-SteamRIP.com\\The Precinct\\images_\\background.avif",
+      "folder_source": "C:/Users/7plus8/Downloads/G",
+      "last_played": "2025-11-24T13:07:40.523877",
+      "play_count": 1,
+      "is_shortcut": false,
+      "hash_id": "bfa6de928da8"
+    }
+  ]
+}

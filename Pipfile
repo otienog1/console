@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pygame = "*"
+pillow = "*"
+pywin32 = "*"
+pillow-avif-plugin = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"
