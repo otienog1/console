@@ -72,10 +72,6 @@ class GameLauncher:
         self.clock = pygame.time.Clock()
         self.fps = 60
 
-        # Controller check interval
-        self.last_controller_check = 0
-        self.controller_check_interval = 2000  # ms
-
     def _load_config(self) -> Dict[str, Any]:
         """
         Load configuration from file.
@@ -200,22 +196,22 @@ class GameLauncher:
                     self._toggle_fullscreen()
 
             elif event.type == pygame.JOYDEVICEADDED:
+                # Only show message if we weren't already connected
+                was_connected = self.input_handler.get_controller_state().connected
                 self.input_handler.check_controller_connection()
-                self.ui.show_message("Controller connected")
+                if not was_connected:
+                    self.ui.show_message("Controller connected")
 
             elif event.type == pygame.JOYDEVICEREMOVED:
+                # Only show message if we were connected
+                was_connected = self.input_handler.get_controller_state().connected
                 self.input_handler.check_controller_connection()
-                self.ui.show_message("Controller disconnected")
+                if was_connected:
+                    self.ui.show_message("Controller disconnected")
 
     def _update(self):
         """Update application state."""
-        # Periodic controller connection check
-        current_time = pygame.time.get_ticks()
-        if current_time - self.last_controller_check > self.controller_check_interval:
-            self.input_handler.check_controller_connection()
-            self.last_controller_check = current_time
-
-        # Get input
+        # Get input (controller connection is checked via pygame events)
         action = self.input_handler.get_input()
 
         # Handle input based on current state

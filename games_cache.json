@@ -1,30 +1,78 @@
 {
   "version": "1.0",
-  "last_scan": "2025-11-24T13:07:40.524038",
+  "last_scan": "2025-11-28T20:19:32.826610",
   "games": [
     {
-      "name": "Mafia III Definitive Edition",
-      "path": "C:\\Users\\7plus8\\Downloads\\G\\Mafia III Definitive Edition\\Mafia3DefinitiveEdition.exe",
+      "name": "Call of Duty HQ",
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Call of Duty HQ\\cod.exe",
       "icon_path": null,
-      "poster_path": "C:\\Users\\7plus8\\Downloads\\G\\Mafia III Definitive Edition\\images_\\poster.jpg",
-      "background_path": "C:\\Users\\7plus8\\Downloads\\G\\Mafia III Definitive Edition\\images_\\background.jpg",
-      "folder_source": "C:/Users/7plus8/Downloads/G",
-      "last_played": "2025-11-24T12:55:02.756716",
+      "poster_path": null,
+      "background_path": null,
+      "folder_source": "C:/Program Files (x86)/Steam/steamapps/common",
+      "last_played": "2025-11-25T00:07:30.902504",
       "play_count": 1,
       "is_shortcut": false,
-      "hash_id": "094f9acc2f52"
+      "hash_id": "b9d47d04c48f"
     },
     {
-      "name": "The Precinct SteamRIP.com",
-      "path": "C:\\Users\\7plus8\\Downloads\\G\\The-Precinct-SteamRIP.com\\The Precinct\\Precinct.exe",
+      "name": "CoD Black Ops Cold War",
+      "path": "D:\\Games\\CoD Black Ops Cold War\\Call of Duty - Black Ops Cold War\\BlackOpsColdWar.exe",
       "icon_path": null,
-      "poster_path": "C:\\Users\\7plus8\\Downloads\\G\\The-Precinct-SteamRIP.com\\The Precinct\\images_\\poster.jpg",
-      "background_path": "C:\\Users\\7plus8\\Downloads\\G\\The-Precinct-SteamRIP.com\\The Precinct\\images_\\background.avif",
-      "folder_source": "C:/Users/7plus8/Downloads/G",
-      "last_played": "2025-11-24T13:07:40.523877",
+      "poster_path": "D:\\Games\\CoD Black Ops Cold War\\Call of Duty - Black Ops Cold War\\images_\\poster.jpg",
+      "background_path": "D:\\Games\\CoD Black Ops Cold War\\Call of Duty - Black Ops Cold War\\images_\\background.jpg",
+      "folder_source": "D:/Games",
+      "last_played": "2025-11-25T00:07:38.139216",
       "play_count": 1,
       "is_shortcut": false,
-      "hash_id": "bfa6de928da8"
+      "hash_id": "2020e197ad99"
+    },
+    {
+      "name": "The Precinct",
+      "path": "D:\\Games\\The Precinct\\The Precinct\\Precinct.exe",
+      "icon_path": null,
+      "poster_path": "D:\\Games\\The Precinct\\The Precinct\\images_\\poster.jpg",
+      "background_path": "D:\\Games\\The Precinct\\The Precinct\\images_\\background.png",
+      "folder_source": "D:/Games",
+      "last_played": "2025-11-25T18:50:54.830908",
+      "play_count": 2,
+      "is_shortcut": false,
+      "hash_id": "b7ae711ccc7a"
+    },
+    {
+      "name": "TKN Eight",
+      "path": "D:\\Games\\TKN-Eight\\TEKKEN 8\\TEKKEN 8.exe",
+      "icon_path": null,
+      "poster_path": "D:\\Games\\TKN-Eight\\TEKKEN 8\\images_\\poster.jpg",
+      "background_path": "D:\\Games\\TKN-Eight\\TEKKEN 8\\images_\\background.jpg",
+      "folder_source": "D:/Games",
+      "last_played": "2025-11-25T18:49:43.222673",
+      "play_count": 3,
+      "is_shortcut": false,
+      "hash_id": "74caaac5ca17"
+    },
+    {
+      "name": "WWE 2k25",
+      "path": "D:\\Games\\WWE 2k25\\WWE 2K25\\WWE2K25_x64.exe",
+      "icon_path": null,
+      "poster_path": "D:\\Games\\WWE 2k25\\WWE 2K25\\images_\\poster.avif",
+      "background_path": "D:\\Games\\WWE 2k25\\WWE 2K25\\images_\\background.avif",
+      "folder_source": "D:/Games",
+      "last_played": "2025-11-25T18:51:23.871811",
+      "play_count": 6,
+      "is_shortcut": false,
+      "hash_id": "4241f8f92477"
+    },
+    {
+      "name": "GodOfWar",
+      "path": "E:\\God of War\\GodOfWar\\GoW.exe",
+      "icon_path": null,
+      "poster_path": "E:\\God of War\\GodOfWar\\images_\\poster.jpg",
+      "background_path": "E:\\God of War\\GodOfWar\\images_\\background.jpg",
+      "folder_source": "E:/God of War",
+      "last_played": "2025-11-28T20:19:32.826588",
+      "play_count": 8,
+      "is_shortcut": false,
+      "hash_id": "b9109bde33ac"
     }
   ]
 }

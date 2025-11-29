@@ -93,10 +93,16 @@ class InputHandler:
     def _connect_controller(self) -> bool:
         """
         Attempt to connect to a controller.
+        Only reinitializes if necessary to avoid spurious events.
 
         Returns:
             True if a controller was connected, False otherwise
         """
+        # Only reinitialize if we don't have a joystick and need to detect new ones
+        if not self.joystick:
+            pygame.joystick.quit()
+            pygame.joystick.init()
+
         count = pygame.joystick.get_count()
 
         if count > 0:
@@ -135,26 +141,30 @@ class InputHandler:
     def check_controller_connection(self) -> bool:
         """
         Check and update controller connection status.
+        Only checks if the joystick instance is still valid, doesn't reinitialize.
 
         Returns:
             True if a controller is connected
         """
-        # Reinitialize joystick subsystem to detect changes
-        pygame.joystick.quit()
-        pygame.joystick.init()
-
-        if pygame.joystick.get_count() == 0:
-            if self.state.connected:
+        # Check if we have a valid joystick
+        if self.joystick:
+            try:
+                # Try to get the joystick count to verify it's still valid
+                # This doesn't require reinitializing the subsystem
+                if pygame.joystick.get_count() > 0:
+                    # Verify our joystick is still valid by checking button count
+                    self.joystick.get_numbuttons()
+                    return True
+            except pygame.error:
+                # Joystick is no longer valid
                 print("Controller disconnected")
                 self.joystick = None
                 self.state.connected = False
                 self.state.controller_name = ""
-            return False
+                return False
 
-        if not self.state.connected:
-            return self._connect_controller()
-
-        return True
+        # No joystick or it was invalidated - try to connect
+        return self._connect_controller()
 
     def get_input(self) -> InputAction:
         """
@@ -199,11 +209,13 @@ class InputHandler:
     def _read_raw_input(self) -> InputAction:
         """
         Read raw input from controller and keyboard.
+        Keyboard input has priority and is checked first.
 
         Returns:
             The detected InputAction
         """
-        # Check keyboard input first (always available as fallback)
+        # Check keyboard input FIRST - keyboard always takes priority
+        # This ensures keyboard works even when controller is connected
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP] or keys[pygame.K_w]:
@@ -223,7 +235,8 @@ class InputHandler:
         if keys[pygame.K_r]:
             return InputAction.RESCAN
 
-        # Check controller input if connected
+        # Only check controller input if no keyboard input was detected
+        # This prevents controller drift from interfering with keyboard
         if self.joystick and self.state.connected:
             try:
                 # Check D-pad (hat)
