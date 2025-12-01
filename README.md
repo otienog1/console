@@ -7,7 +7,10 @@ A PlayStation-style game launcher for PC with full controller support. Navigate 
 
 ## Features
 
-- **Controller Support**: Full PS4/PS5 DualShock/DualSense controller support via DirectInput
+- **Controller Support**: Full PS4/PS5 DualShock/DualSense controller support via USB and Bluetooth
+  - Enhanced Bluetooth detection and compatibility
+  - SDL HIDAPI support for reliable wireless connections
+  - Fallback support for generic controllers (Xbox, etc.)
 - **Keyboard Fallback**: Arrow keys and Enter/Escape for navigation without a controller
 - **10-Foot UI**: Large, readable interface designed for TV/monitor viewing from a distance
 - **Multi-Folder Scanning**: Configure multiple game folders (Steam, Epic, GOG, etc.)
@@ -212,10 +215,40 @@ The launcher can scan games from:
 
 ### Controller not detected
 
-1. Ensure your PS4/PS5 controller is connected via USB or Bluetooth
-2. The controller should appear as "Wireless Controller" in Windows
-3. Try disconnecting and reconnecting the controller
-4. If using Bluetooth, ensure it's properly paired in Windows settings
+**For USB connections:**
+1. Ensure the USB cable is properly connected (some cables are charge-only)
+2. Try a different USB port or cable
+3. The controller should appear as "Wireless Controller" in Windows Device Manager
+
+**For Bluetooth connections:**
+1. **Pairing PS4 Controller:**
+   - Hold the PS button + Share button simultaneously until the light bar starts flashing rapidly
+   - Open Windows Bluetooth settings → Add Bluetooth or other device → Bluetooth
+   - Select "Wireless Controller" when it appears
+
+2. **Pairing PS5 Controller:**
+   - Hold the PS button + Create button simultaneously until the light bar starts flashing
+   - Follow the same Windows pairing process as PS4
+
+3. **Troubleshooting Bluetooth issues:**
+   - Remove the controller from Windows Bluetooth settings and re-pair
+   - Ensure no other devices are trying to connect to the controller
+   - Check Windows Device Manager for any driver warnings
+   - Try running the launcher - it includes enhanced Bluetooth detection with diagnostic logging
+   - Check the console output for detailed controller detection information
+
+4. **If Bluetooth still doesn't work:**
+   - Some Bluetooth adapters have compatibility issues with PS4/PS5 controllers
+   - Try using a different Bluetooth adapter (USB dongles often work better than built-in adapters)
+   - As a temporary solution, use a USB cable connection
+
+**Diagnostic logging:**
+When you run the launcher, check the console output for detailed information:
+- Controller name and GUID
+- Number of buttons, axes, and hats detected
+- Button press detection (press buttons to see which numbers are triggered)
+
+This information can help identify button mapping issues.
 
 ### Games not found
 
