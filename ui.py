@@ -114,6 +114,9 @@ class UIRenderer:
         # Icon/poster cache
         self.icon_cache: Dict[str, pygame.Surface] = {}
 
+        # Load button icons
+        self.button_icons = self._load_button_icons()
+
         # Background cache and state
         self.background_cache: Dict[str, pygame.Surface] = {}
         self.current_background: Optional[pygame.Surface] = None
@@ -217,6 +220,44 @@ class UIRenderer:
             pygame.draw.circle(surface, Colors.TEXT_GRAY, (bx, by), btn_size)
 
         return surface
+
+    def _load_button_icons(self) -> Dict[str, Optional[pygame.Surface]]:
+        """Load PlayStation button icon images."""
+        icons = {}
+        button_icons_dir = Path("assets") / "button_icons"
+
+        # Button icon mappings
+        icon_files = {
+            '✕': 'cross.png',
+            'X': 'cross.png',
+            '○': 'circle.png',
+            'O': 'circle.png',
+            '△': 'triangle.png',
+            '□': 'square.png',
+            'OPTIONS': 'options.png',
+            'SHARE': 'share.png',
+            'D-Pad': 'dpad_up.png',  # Generic d-pad
+        }
+
+        # Load each icon
+        for key, filename in icon_files.items():
+            icon_path = button_icons_dir / filename
+            if icon_path.exists():
+                try:
+                    icon = pygame.image.load(str(icon_path))
+                    # Scale to appropriate size for UI (32x32 for action buttons, larger for text buttons)
+                    if key in ['OPTIONS', 'SHARE']:
+                        icon = pygame.transform.smoothscale(icon, (80, 32))
+                    else:
+                        icon = pygame.transform.smoothscale(icon, (32, 32))
+                    icons[key] = icon
+                except Exception as e:
+                    print(f"[UI] Warning: Could not load button icon {filename}: {e}")
+                    icons[key] = None
+            else:
+                icons[key] = None
+
+        return icons
 
     def load_icon(self, icon_path: Optional[str], size: Tuple[int, int] = None) -> pygame.Surface:
         """Load and cache a game icon."""
@@ -557,13 +598,13 @@ class UIRenderer:
         self.screen.blit(status_surface, (self.width - 165, 38))
 
     def _render_footer(self, button_prompts: Dict[str, str]):
-        """Render PS5-style button prompts footer."""
-        footer_y = self.height - 45
+        """Render PS5-style button prompts footer with icons."""
+        footer_y = self.height - 50
 
         # Define button icons and actions
         prompts = [
-            (button_prompts.get('confirm', 'X'), "Select"),
-            (button_prompts.get('back', 'O'), "Back"),
+            (button_prompts.get('confirm', '✕'), "Select"),
+            (button_prompts.get('back', '○'), "Back"),
             (button_prompts.get('options', 'OPTIONS'), "Options"),
         ]
 
@@ -574,21 +615,33 @@ class UIRenderer:
             # Action text
             action_surface = self.font_tiny.render(action, True, Colors.TEXT_GRAY)
             x -= action_surface.get_width()
-            self.screen.blit(action_surface, (x, footer_y))
+            self.screen.blit(action_surface, (x, footer_y + 8))
 
-            # Button icon/text
+            # Button icon
             x -= 10
-            btn_surface = self.font_tiny.render(button, True, Colors.TEXT_WHITE)
-            x -= btn_surface.get_width()
 
-            # Draw button background circle/pill
-            btn_bg_width = btn_surface.get_width() + 16
-            btn_bg_rect = (x - 8, footer_y - 4, btn_bg_width, 26)
-            pygame.draw.rect(self.screen, Colors.TILE_BG, btn_bg_rect, border_radius=13)
-            pygame.draw.rect(self.screen, Colors.DIVIDER, btn_bg_rect, width=1, border_radius=13)
+            # Try to use button icon image, fall back to text
+            button_icon = self.button_icons.get(button)
+            if button_icon:
+                # Use the loaded button icon image
+                icon_rect = button_icon.get_rect()
+                icon_x = x - icon_rect.width
+                icon_y = footer_y + (28 - icon_rect.height) // 2  # Center vertically
+                self.screen.blit(button_icon, (icon_x, icon_y))
+                x = icon_x - 10
+            else:
+                # Fall back to text rendering
+                btn_surface = self.font_tiny.render(button, True, Colors.TEXT_WHITE)
+                x -= btn_surface.get_width()
 
-            self.screen.blit(btn_surface, (x, footer_y))
-            x -= 30
+                # Draw button background circle/pill
+                btn_bg_width = btn_surface.get_width() + 16
+                btn_bg_rect = (x - 8, footer_y + 4, btn_bg_width, 26)
+                pygame.draw.rect(self.screen, Colors.TILE_BG, btn_bg_rect, border_radius=13)
+                pygame.draw.rect(self.screen, Colors.DIVIDER, btn_bg_rect, width=1, border_radius=13)
+
+                self.screen.blit(btn_surface, (x, footer_y + 8))
+                x -= 10
 
     def _render_no_games_message(self):
         """Render PS5-style empty state message."""
