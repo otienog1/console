@@ -1,6 +1,12 @@
 """
 Controller Input Handler
 Handles PS4/PS5 controllers and keyboard input for the game launcher.
+
+Features:
+- Enhanced Bluetooth controller detection
+- USB and wireless connection support
+- Diagnostic logging for troubleshooting
+- Fallback support for generic controllers
 """
 
 import pygame
@@ -104,36 +110,68 @@ class InputHandler:
             pygame.joystick.init()
 
         count = pygame.joystick.get_count()
+        print(f"[Controller] Detected {count} controller(s)")
 
         if count > 0:
-            # Try to find a PlayStation controller
+            # Try to find a PlayStation or generic controller
             for i in range(count):
                 try:
                     joystick = pygame.joystick.Joystick(i)
                     joystick.init()
-                    name = joystick.get_name().lower()
+                    name = joystick.get_name()
+                    name_lower = name.lower()
+
+                    # Log detailed controller information
+                    print(f"[Controller {i}] Name: {name}")
+                    print(f"[Controller {i}] GUID: {joystick.get_guid()}")
+                    print(f"[Controller {i}] Buttons: {joystick.get_numbuttons()}")
+                    print(f"[Controller {i}] Axes: {joystick.get_numaxes()}")
+                    print(f"[Controller {i}] Hats: {joystick.get_numhats()}")
+
+                    # Expanded list of PlayStation controller identifiers
+                    # Covers USB, Bluetooth, and various OS/driver combinations
+                    ps_identifiers = [
+                        'playstation',
+                        'ps4', 'ps5',
+                        'dualshock', 'dualsense',
+                        'wireless controller',
+                        'ps4 controller',
+                        'ps5 controller',
+                        'sony interactive entertainment',
+                        'sony computer entertainment',
+                        'cuh-zct',  # PS4 controller model numbers
+                        'cfI-zct',  # PS5 controller model numbers
+                        '054c:05c4',  # PS4 USB vendor:product ID
+                        '054c:09cc',  # PS4 Bluetooth vendor:product ID
+                        '054c:0ce6',  # PS5 vendor:product ID
+                    ]
 
                     # Check if it's a PlayStation controller
-                    if any(ps in name for ps in ['playstation', 'ps4', 'ps5', 'dualshock', 'dualsense', 'wireless controller']):
+                    if any(ps_id in name_lower for ps_id in ps_identifiers):
                         self.joystick = joystick
                         self.state.connected = True
-                        self.state.controller_name = joystick.get_name()
-                        print(f"Connected to PlayStation controller: {self.state.controller_name}")
+                        self.state.controller_name = name
+                        print(f"[Controller] ✓ Connected to PlayStation controller: {name}")
+                        self._log_button_test()
                         return True
-                except pygame.error:
+                except pygame.error as e:
+                    print(f"[Controller {i}] Error initializing: {e}")
                     continue
 
             # If no PlayStation controller found, use the first available
+            # This ensures compatibility with Xbox and other generic controllers
             try:
                 self.joystick = pygame.joystick.Joystick(0)
                 self.joystick.init()
                 self.state.connected = True
                 self.state.controller_name = self.joystick.get_name()
-                print(f"Connected to controller: {self.state.controller_name}")
+                print(f"[Controller] ✓ Connected to generic controller: {self.state.controller_name}")
+                self._log_button_test()
                 return True
-            except pygame.error:
-                pass
+            except pygame.error as e:
+                print(f"[Controller] Error connecting to first controller: {e}")
 
+        print("[Controller] No controllers detected")
         self.state.connected = False
         self.state.controller_name = ""
         return False
@@ -165,6 +203,21 @@ class InputHandler:
 
         # No joystick or it was invalidated - try to connect
         return self._connect_controller()
+
+    def _log_button_test(self):
+        """Log a test of button mappings for debugging."""
+        if not self.joystick:
+            return
+
+        try:
+            print(f"[Controller] Button mapping test:")
+            print(f"[Controller]   Expected Cross (confirm): Button {self.PS_BUTTON_CROSS}")
+            print(f"[Controller]   Expected Circle (back): Button {self.PS_BUTTON_CIRCLE}")
+            print(f"[Controller]   Expected Triangle (rescan): Button {self.PS_BUTTON_TRIANGLE}")
+            print(f"[Controller]   Expected Options: Button {self.PS_BUTTON_OPTIONS}")
+            print(f"[Controller] Press buttons to verify mapping...")
+        except Exception as e:
+            print(f"[Controller] Error in button test: {e}")
 
     def get_input(self) -> InputAction:
         """
@@ -267,6 +320,17 @@ class InputHandler:
 
                 # Check buttons
                 if self.joystick.get_numbuttons() > 0:
+                    # Check for any button press and log for debugging
+                    pressed_buttons = []
+                    for btn in range(self.joystick.get_numbuttons()):
+                        if self.joystick.get_button(btn):
+                            pressed_buttons.append(btn)
+
+                    # Log button presses for debugging (only when buttons are pressed)
+                    if pressed_buttons and not hasattr(self, '_last_pressed_buttons'):
+                        print(f"[Controller] Button(s) pressed: {pressed_buttons}")
+                    self._last_pressed_buttons = pressed_buttons if pressed_buttons else []
+
                     if self._is_button_pressed(self.PS_BUTTON_CROSS):
                         return InputAction.CONFIRM
                     if self._is_button_pressed(self.PS_BUTTON_CIRCLE):

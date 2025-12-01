@@ -42,6 +42,10 @@ class GameLauncher:
         # Load configuration
         self.config = self._load_config()
 
+        # Set SDL environment variables for better controller support
+        # These must be set BEFORE pygame.init()
+        self._setup_sdl_controller_support()
+
         # Initialize Pygame
         pygame.init()
         pygame.display.set_caption("Game Launcher")
@@ -71,6 +75,25 @@ class GameLauncher:
         # Timing
         self.clock = pygame.time.Clock()
         self.fps = 60
+
+    def _setup_sdl_controller_support(self):
+        """
+        Configure SDL environment variables for better controller support.
+        Must be called before pygame.init().
+        """
+        # Enable HIDAPI support for PS4/PS5 controllers via USB and Bluetooth
+        os.environ['SDL_JOYSTICK_HIDAPI_PS4'] = '1'
+        os.environ['SDL_JOYSTICK_HIDAPI_PS5'] = '1'
+
+        # Enable PS4/PS5 rumble support
+        os.environ['SDL_JOYSTICK_HIDAPI_PS4_RUMBLE'] = '1'
+        os.environ['SDL_JOYSTICK_HIDAPI_PS5_RUMBLE'] = '1'
+
+        # Allow joystick events even when window is not focused
+        os.environ['SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS'] = '1'
+
+        # Enable joystick thread for better responsiveness
+        os.environ['SDL_JOYSTICK_THREAD'] = '1'
 
     def _load_config(self) -> Dict[str, Any]:
         """
