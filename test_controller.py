@@ -62,8 +62,16 @@ def detect_controllers():
 
             is_playstation = any(ps_id in name_lower for ps_id in ps_identifiers)
             print(f"  Detected as: {'✓ PlayStation Controller' if is_playstation else '⚠ Generic Controller'}")
-            print()
 
+            # Detect likely connection type
+            if '09cc' in guid.lower():
+                print(f"  Connection: Likely Bluetooth (GUID suggests BT)")
+            elif num_buttons == 13:
+                print(f"  Connection: Possibly Bluetooth (13 buttons)")
+            else:
+                print(f"  Connection: Likely USB or varies by driver")
+
+            print()
             controllers.append(joystick)
         except pygame.error as e:
             print(f"❌ Error initializing controller {i}: {e}\n")
@@ -76,15 +84,35 @@ def test_buttons(controllers):
         return
 
     joystick = controllers[0]
+    guid = joystick.get_guid()
+    num_buttons = joystick.get_numbuttons()
+
     print(f"{'='*70}")
     print(f"BUTTON MAPPING TEST - Using Controller: {joystick.get_name()}")
     print(f"{'='*70}")
-    print("\nExpected PlayStation button mappings:")
-    print("  Button 0: Cross (X) - Confirm")
-    print("  Button 1: Circle (O) - Back")
-    print("  Button 2: Square")
-    print("  Button 3: Triangle - Rescan")
-    print("  Button 9: Options")
+
+    # Detect connection type
+    if '09cc' in guid.lower() or num_buttons == 13:
+        print("\n✓ Bluetooth connection detected!")
+        print("  Expected button mappings (Bluetooth):")
+        print("  Button 0: Cross (X) - Confirm")
+        print("  Button 1: Circle (O) - Back")
+        print("  Button 2: Triangle - Rescan")
+        print("  Button 3: Square")
+        print("  Button 9: Options - Settings")
+        print("\nIf these don't match, add this to your config.json controller section:")
+        print('  "button_mapping": "bluetooth"')
+    else:
+        print("\n✓ USB connection detected (or ambiguous)")
+        print("  Expected button mappings (USB):")
+        print("  Button 0: Cross (X) - Confirm")
+        print("  Button 1: Circle (O) - Back")
+        print("  Button 2: Square")
+        print("  Button 3: Triangle - Rescan")
+        print("  Button 9: Options - Settings")
+        print("\nIf buttons don't work, add this to your config.json controller section:")
+        print('  "button_mapping": "usb"  (or "bluetooth" if using Bluetooth)')
+
     print("\nPress buttons on your controller (Ctrl+C to exit)...")
     print("-" * 70)
 

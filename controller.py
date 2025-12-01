@@ -43,18 +43,52 @@ class InputHandler:
     Provides a unified interface for game navigation.
     """
 
-    # PlayStation button mappings (common for PS4/PS5 via DirectInput)
-    # These may vary by controller - these are typical mappings
-    PS_BUTTON_CROSS = 0       # X button - confirm
-    PS_BUTTON_CIRCLE = 1      # Circle - back
-    PS_BUTTON_SQUARE = 2      # Square
-    PS_BUTTON_TRIANGLE = 3    # Triangle - rescan
+    # PlayStation button mappings - USB (DirectInput mode)
+    # These are typical for USB-connected PS4 controllers
+    PS_BUTTON_CROSS_USB = 0       # X button - confirm
+    PS_BUTTON_CIRCLE_USB = 1      # Circle - back
+    PS_BUTTON_SQUARE_USB = 2      # Square
+    PS_BUTTON_TRIANGLE_USB = 3    # Triangle - rescan
+    PS_BUTTON_L1_USB = 4
+    PS_BUTTON_R1_USB = 5
+    PS_BUTTON_L2_USB = 6
+    PS_BUTTON_R2_USB = 7
+    PS_BUTTON_SHARE_USB = 8
+    PS_BUTTON_OPTIONS_USB = 9     # Options - settings
+    PS_BUTTON_L3_USB = 10
+    PS_BUTTON_R3_USB = 11
+    PS_BUTTON_PS_USB = 12
+    PS_BUTTON_TOUCHPAD_USB = 13
+
+    # PlayStation button mappings - Bluetooth
+    # These are typical for Bluetooth-connected PS4 controllers
+    # Note: Bluetooth mappings can vary by driver and OS version
+    PS_BUTTON_CROSS_BT = 0        # X button - confirm
+    PS_BUTTON_CIRCLE_BT = 1       # Circle - back
+    PS_BUTTON_SQUARE_BT = 3       # Square
+    PS_BUTTON_TRIANGLE_BT = 2     # Triangle - rescan
+    PS_BUTTON_L1_BT = 4
+    PS_BUTTON_R1_BT = 5
+    PS_BUTTON_L2_BT = 6
+    PS_BUTTON_R2_BT = 7
+    PS_BUTTON_SHARE_BT = 8
+    PS_BUTTON_OPTIONS_BT = 9      # Options - settings
+    PS_BUTTON_L3_BT = 11
+    PS_BUTTON_R3_BT = 12
+    PS_BUTTON_PS_BT = 10
+    PS_BUTTON_TOUCHPAD_BT = 13
+
+    # Active button mappings (will be set based on detection)
+    PS_BUTTON_CROSS = 0
+    PS_BUTTON_CIRCLE = 1
+    PS_BUTTON_SQUARE = 2
+    PS_BUTTON_TRIANGLE = 3
     PS_BUTTON_L1 = 4
     PS_BUTTON_R1 = 5
     PS_BUTTON_L2 = 6
     PS_BUTTON_R2 = 7
     PS_BUTTON_SHARE = 8
-    PS_BUTTON_OPTIONS = 9     # Options - settings
+    PS_BUTTON_OPTIONS = 9
     PS_BUTTON_L3 = 10
     PS_BUTTON_R3 = 11
     PS_BUTTON_PS = 12
@@ -152,6 +186,7 @@ class InputHandler:
                         self.state.connected = True
                         self.state.controller_name = name
                         print(f"[Controller] ✓ Connected to PlayStation controller: {name}")
+                        self._detect_button_mapping()
                         self._log_button_test()
                         return True
                 except pygame.error as e:
@@ -203,6 +238,88 @@ class InputHandler:
 
         # No joystick or it was invalidated - try to connect
         return self._connect_controller()
+
+    def _detect_button_mapping(self):
+        """
+        Detect and set the appropriate button mapping scheme.
+        Attempts to determine if controller is using USB or Bluetooth mapping.
+        """
+        if not self.joystick:
+            return
+
+        try:
+            num_buttons = self.joystick.get_numbuttons()
+            guid = self.joystick.get_guid()
+            name_lower = self.joystick.get_name().lower()
+
+            # Check for manual override in config
+            mapping_mode = self.config.get('button_mapping', None)
+
+            if mapping_mode:
+                if mapping_mode.lower() == "bluetooth" or mapping_mode.lower() == "bt":
+                    mapping_mode = "Bluetooth"
+                    print(f"[Controller] Using Bluetooth mapping (manual config override)")
+                elif mapping_mode.lower() == "usb":
+                    mapping_mode = "USB"
+                    print(f"[Controller] Using USB mapping (manual config override)")
+                else:
+                    mapping_mode = None  # Invalid config, fall through to auto-detect
+
+            if not mapping_mode:
+                # Auto-detection heuristics:
+                # Default to USB mapping
+                mapping_mode = "USB"
+
+                # Check if GUID suggests Bluetooth (contains '09cc' which is BT product ID)
+                if '09cc' in guid.lower():
+                    mapping_mode = "Bluetooth"
+                    print(f"[Controller] Detected Bluetooth PS4 controller via GUID")
+                # Check button count - some Bluetooth controllers report 13 buttons instead of 14
+                elif num_buttons == 13:
+                    mapping_mode = "Bluetooth"
+                    print(f"[Controller] Detected possible Bluetooth mode (13 buttons)")
+                # For ambiguous cases, use USB as default but warn user
+                else:
+                    print(f"[Controller] Using default USB button mapping")
+                    print(f"[Controller] If buttons don't work correctly, add '\"button_mapping\": \"bluetooth\"' to config.json")
+
+            # Apply the detected mapping
+            if mapping_mode == "Bluetooth":
+                self.PS_BUTTON_CROSS = self.PS_BUTTON_CROSS_BT
+                self.PS_BUTTON_CIRCLE = self.PS_BUTTON_CIRCLE_BT
+                self.PS_BUTTON_SQUARE = self.PS_BUTTON_SQUARE_BT
+                self.PS_BUTTON_TRIANGLE = self.PS_BUTTON_TRIANGLE_BT
+                self.PS_BUTTON_L1 = self.PS_BUTTON_L1_BT
+                self.PS_BUTTON_R1 = self.PS_BUTTON_R1_BT
+                self.PS_BUTTON_L2 = self.PS_BUTTON_L2_BT
+                self.PS_BUTTON_R2 = self.PS_BUTTON_R2_BT
+                self.PS_BUTTON_SHARE = self.PS_BUTTON_SHARE_BT
+                self.PS_BUTTON_OPTIONS = self.PS_BUTTON_OPTIONS_BT
+                self.PS_BUTTON_L3 = self.PS_BUTTON_L3_BT
+                self.PS_BUTTON_R3 = self.PS_BUTTON_R3_BT
+                self.PS_BUTTON_PS = self.PS_BUTTON_PS_BT
+                self.PS_BUTTON_TOUCHPAD = self.PS_BUTTON_TOUCHPAD_BT
+                print(f"[Controller] Applied Bluetooth button mapping")
+            else:
+                self.PS_BUTTON_CROSS = self.PS_BUTTON_CROSS_USB
+                self.PS_BUTTON_CIRCLE = self.PS_BUTTON_CIRCLE_USB
+                self.PS_BUTTON_SQUARE = self.PS_BUTTON_SQUARE_USB
+                self.PS_BUTTON_TRIANGLE = self.PS_BUTTON_TRIANGLE_USB
+                self.PS_BUTTON_L1 = self.PS_BUTTON_L1_USB
+                self.PS_BUTTON_R1 = self.PS_BUTTON_R1_USB
+                self.PS_BUTTON_L2 = self.PS_BUTTON_L2_USB
+                self.PS_BUTTON_R2 = self.PS_BUTTON_R2_USB
+                self.PS_BUTTON_SHARE = self.PS_BUTTON_SHARE_USB
+                self.PS_BUTTON_OPTIONS = self.PS_BUTTON_OPTIONS_USB
+                self.PS_BUTTON_L3 = self.PS_BUTTON_L3_USB
+                self.PS_BUTTON_R3 = self.PS_BUTTON_R3_USB
+                self.PS_BUTTON_PS = self.PS_BUTTON_PS_USB
+                self.PS_BUTTON_TOUCHPAD = self.PS_BUTTON_TOUCHPAD_USB
+                print(f"[Controller] Applied USB button mapping")
+
+        except Exception as e:
+            print(f"[Controller] Error detecting button mapping: {e}")
+            print(f"[Controller] Using default USB mapping")
 
     def _log_button_test(self):
         """Log a test of button mappings for debugging."""
